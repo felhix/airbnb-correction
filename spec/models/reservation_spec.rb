@@ -15,11 +15,24 @@ RSpec.describe Reservation, type: :model do
       expect(@reservation).to be_a(Reservation)
     end
     describe "start_date and end_date" do
-    	it "is not valid if start_date is after end_date" do
-	      invalid_reservation = FactoryBot.build(:reservation, start_date: Time.now, end_date: Time.now - 1.day)
-	      expect(invalid_reservation).not_to be_valid
-	    end
-		end
+      it "is not valid if start_date is after end_date" do
+        invalid_reservation = FactoryBot.build(:reservation, start_date: Time.now, end_date: Time.now - 1.day)
+        expect(invalid_reservation).not_to be_valid
+        expect(invalid_reservation.errors.include?(:start_date)).to eq(true)
+      end
+    end
+    describe "cannot create reservation if listing has already a reservation at the same time" do
+      it "cannot create reservation at the same time for the same listing" do
+        listing = FactoryBot.create(:listing)    
+        now = Time.now
+        reservation = FactoryBot.create(:reservation, listing: listing, start_date: now - 1.day, end_date: now + 2.day)
+        invalid_reservation_1 = FactoryBot.build(:reservation, listing: listing, start_date: now + 1.day, end_date: now + 3.day)
+        invalid_reservation_2 = FactoryBot.build(:reservation, listing: listing, start_date: now - 3.day, end_date: now)
+        listing.reload
+        expect(invalid_reservation_1).not_to be_valid
+        expect(invalid_reservation_2).not_to be_valid
+      end
+    end
   end
 
   context "associations" do

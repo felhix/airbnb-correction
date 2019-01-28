@@ -37,4 +37,21 @@ RSpec.describe Listing, type: :model do
     it { expect(@listing).to belong_to(:admin).class_name('User') }
   end
 
+  context "public instance methods" do
+    describe "#overlaping_reservation" do
+      it { expect(@listing).to respond_to(:overlaping_reservation?) }
+      it "should tell if the listing is taken at this date" do
+        now = Time.now
+        listing = FactoryBot.create(:listing)    
+        reservation_1 = FactoryBot.create(:reservation, listing: listing, start_date: now - 1.day, end_date: now + 1.day)
+        reservation_2 = FactoryBot.create(:reservation, listing: listing, start_date: now + 2.day, end_date: now + 4.day)
+        listing.reload
+        expect(listing.overlaping_reservation?(now)).to eq(true)
+        expect(listing.overlaping_reservation?(now - 2.day)).to eq(false)
+        expect(listing.overlaping_reservation?(now + 3.day)).to eq(true)
+      end
+    end
+  end
+
+
 end
