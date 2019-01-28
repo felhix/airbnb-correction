@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :city do
     name { Faker::Address.city }
-    zip_code { "33800" }
+    sequence(:zip_code) { |n| (90000 - n).to_s  }
   end
 end

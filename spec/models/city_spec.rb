@@ -19,6 +19,7 @@ RSpec.describe City, type: :model do
 		end
 		describe "#zip_code" do
 		  it { expect(@city).to validate_presence_of(:zip_code) }
+      it { expect(@city).to validate_uniqueness_of(:zip_code).case_insensitive }
       it { is_expected.to allow_value("33800").for(:zip_code) }
       it { is_expected.to allow_value("05123").for(:zip_code) }
       it { is_expected.to allow_value("2a004").for(:zip_code) }
